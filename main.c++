@@ -224,6 +224,31 @@ bool validate(vector<string> prase,vector<table> tables){
             cout<<"void_db> argument mismatch"<<endl;
             return false;
         }
+        for(int i=0;i<tables.size();i++){
+            if(prase[1]==tables[i].table_name){
+                cout<<"void_db> table already exists"<<endl;
+                return false;
+            }
+        }
+        bool idfound=false;
+        for(int i=2;i<prase.size();i++){
+            if(prase[i]=="id"){
+                idfound=true;
+                break;
+            }
+        }
+        if(!idfound){
+            cout<<"void_db> please include \"id\" column"<<endl;
+            return false;
+        }
+        for(int i=2;i<prase.size();i++){
+            for(int j=i+1;j<prase.size();j++){
+                if(prase[i]==prase[j]){
+                    cout<<"void_db> duplicate column"<<endl;
+                    return false;
+                }
+            }
+        }
         return true;
     }
     if(c==1||c==2){
@@ -264,7 +289,7 @@ int main(){
         if(p.empty()){
             continue;
         }
-        
+
         if(p[0]!="exit"){
             bool valid=validate(p,tables);
             if(!valid){
