@@ -2,7 +2,8 @@
 #include <string>
 #include <vector>
 using namespace std;
-
+vector<string> commands={"create","select","delete","insert","update"};
+vector<int> argu={3,2,3,3,3};
 class rows{
     private:
         vector<string> data;
@@ -206,6 +207,49 @@ bool update(vector<string> prase,vector<table> &tables){
     cout<<"void_db> table not found"<<endl;
     return false;
 }
+bool validate(vector<string> prase,vector<table> tables){
+    int c=-1;
+    for(int i=0;i<commands.size();i++){
+        if(prase[0]==commands[i]){
+            c=i;
+            break;
+        }
+    }
+    if(c==-1){
+        cout<<"void_db> Invalid command"<<endl;
+        return false;
+    }
+    if(c==0){
+        if(prase.size()<argu[c]){
+            cout<<"void_db> argument mismatch"<<endl;
+            return false;
+        }
+        return true;
+    }
+    if(c==1||c==2){
+        if(prase.size()!=argu[c]){
+            cout<<"void_db> argument mismatch"<<endl;
+            return false;
+        }
+    }else{
+        if(prase.size()<argu[c]){
+            cout<<"void_db> argument mismatch"<<endl;
+            return false;
+        }
+    }
+    bool found=false;
+    for(int i=0;i<tables.size();i++){
+        if(prase[1]==tables[i].table_name){
+            found=true;
+            break;
+        }
+    }
+    if(!found){
+        cout<<"void_db> Table not found"<<endl;
+        return false;
+    }
+    return true;
+}
 
 int main(){
     string command;
@@ -217,10 +261,17 @@ int main(){
         getline(cin,command);
 
         vector<string> p=praseing(command);
-
         if(p.empty()){
             continue;
         }
+        
+        if(p[0]!="exit"){
+            bool valid=validate(p,tables);
+            if(!valid){
+                continue;
+            }
+        }
+
 
         if(p[0]=="create"){
             string name=p[1];
