@@ -109,6 +109,10 @@ void select(vector<string> prase,vector<table> &tables){
         }
         i++;
     }
+    for(int j=0;j<tables[i].columns.size();j++){
+        cout<<"| "<<tables[i].columns[j]<<" ";
+    }
+    cout<<"|"<<endl;
     for(int j=0;j<tables[i].data.size();j++){
         tables[i].data[j].display();
     }
