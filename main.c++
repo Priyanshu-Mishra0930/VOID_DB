@@ -39,9 +39,7 @@ class rows{
             }
         }
 };
-
 int rows::count=0;
-
 class table{
     public:
         string table_name;
@@ -53,7 +51,6 @@ class table{
             this->columns=columns;
         }
 };
-
 vector<string> praseing(string input){
     vector<string> prase;
     int size=input.length();
@@ -76,12 +73,10 @@ vector<string> praseing(string input){
 
     return prase;
 }
-
 void create(string name,vector<string> colmuns,vector<table> &tables){
     table t1(name,colmuns);
     tables.push_back(t1);
 }
-
 bool insert(vector<string> prase,vector<table> &tables){
     int i=0;
 
@@ -91,6 +86,21 @@ bool insert(vector<string> prase,vector<table> &tables){
         }
         i++;
     }
+    int id_column=0;
+    for(int j=0;j<tables[i].columns.size();j++){
+        if(tables[i].columns[j]=="id"){
+            id_column=j;
+            break;
+        }
+    }
+    int* h_t=new int[1001]{0};
+    for(int j=0;j<tables[i].data.size();j++){
+        h_t[tables[i].data[j].getid(id_column)]++;
+    }
+    if(h_t[stoi(prase[id_column+2])]>0){
+        cout<<"void_db> dublicate id found"<<endl;
+        return false;
+    }
     prase.erase(prase.begin(),prase.begin()+2);
 
     rows r1(prase);
@@ -99,7 +109,6 @@ bool insert(vector<string> prase,vector<table> &tables){
 
     return true;
 }
-
 void select(vector<string> prase,vector<table> &tables){
     int i=0;
 
@@ -117,7 +126,6 @@ void select(vector<string> prase,vector<table> &tables){
         tables[i].data[j].display();
     }
 }
-
 bool del(vector<string> prase,vector<table> &tables){
     int i=0;
 
@@ -151,7 +159,6 @@ bool del(vector<string> prase,vector<table> &tables){
     cout<<"void_db> table not found"<<endl;
     return false;
 }
-
 bool update(vector<string> prase,vector<table> &tables){
     int i=0;
 
