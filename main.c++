@@ -7,10 +7,8 @@ vector<int> argu={3,2,3,3,3};
 class rows{
     private:
         vector<string> data;
-
     public:
         static int count;
-
         rows(vector<string> data){
             count++;
             this->data=data;
@@ -21,65 +19,108 @@ class rows{
             }
             cout<<endl;
         }
-
         int getid(int c){
             return stoi(data[c]);
         }
-
         void setdata(vector<string> newdata,int idindex){
             int k=0;
-
             for(int i=0;i<data.size();i++){
                 if(i==idindex){
                     continue;
                 }
-
                 data[i]=newdata[k];
                 k++;
             }
         }
 };
 int rows::count=0;
+class column{
+    public:
+        string column_name;
+        int data_type;
+        column(string column_name,int data_type){
+            this->column_name=column_name;
+            this->data_type=data_type;
+        }
+};
 class table{
     public:
         string table_name;
-        vector<string> columns;
+        vector<column> columns;
         vector<rows> data;
 
-        table(string table_name,vector<string> columns){
+        table(string table_name,vector<column> columns){
             this->table_name=table_name;
             this->columns=columns;
         }
 };
+int data_type(string type){
+    if(type=="int"){
+        return 1;
+    }else if(type=="text"){
+        return 2;
+    }else if(type=="float"){
+        return 3;
+    }else{
+        return 0;
+    }
+}
 vector<string> praseing(string input){
     vector<string> prase;
     int size=input.length();
     int i=0;
-
     while(i<size){
         string s="";
-
         while(i<size && input[i]!=' '){
             s+=input[i];
             i++;
         }
-
         if(i<size){
             i++;
         }
-
         prase.push_back(s);
     }
-
     return prase;
 }
-void create(string name,vector<string> colmuns,vector<table> &tables){
-    table t1(name,colmuns);
+vector<column> create_column(vector<string> prase){
+    vector<column>columns;
+    for(int i=0;i<prase.size();i+=2){
+        column c1(prase[i],data_type(prase[i+1]));
+        columns.push_back(c1);
+    }
+    return columns;
+}
+bool check_type(string s,int type){
+    if(type==1){
+        try{
+            size_t p;
+            stoi(s,&p);
+            return p==s.size();
+        }catch(...){
+            return false;
+        }
+    }
+    if(type==2){
+        return true;
+    }
+    if(type==3){
+        try{
+            size_t p;
+            stof(s,&p);
+            return p==s.size();
+        }catch(...){
+            return false;
+        }
+    }
+    return false;
+}
+void create(string name,vector<string> prase,vector<table> &tables){
+    vector<column>columns=create_column(prase);
+    table t1(name,columns);
     tables.push_back(t1);
 }
 bool insert(vector<string> prase,vector<table> &tables){
     int i=0;
-
     while(i<tables.size()){
         if(tables[i].table_name==prase[1]){
             break;
@@ -88,9 +129,16 @@ bool insert(vector<string> prase,vector<table> &tables){
     }
     int id_column=0;
     for(int j=0;j<tables[i].columns.size();j++){
-        if(tables[i].columns[j]=="id"){
+        if(tables[i].columns[j].column_name=="id"){
             id_column=j;
             break;
+        }
+    }
+    for(int j=0;j<tables[i].columns.size();j++){
+        int type=tables[i].columns[j].data_type;
+        if(!check_type(prase[j+2],type)){
+            cout<<"void_db> invalid data type for \""<<tables[i].columns[j].column_name<<"\""<<endl;
+            return false;
         }
     }
     int* h_t=new int[1001]{0};
@@ -102,16 +150,12 @@ bool insert(vector<string> prase,vector<table> &tables){
         return false;
     }
     prase.erase(prase.begin(),prase.begin()+2);
-
     rows r1(prase);
-
     tables[i].data.push_back(r1);
-
     return true;
 }
 void select(vector<string> prase,vector<table> &tables){
     int i=0;
-
     while(i<tables.size()){
         if(tables[i].table_name==prase[1]){
             break;
@@ -119,7 +163,7 @@ void select(vector<string> prase,vector<table> &tables){
         i++;
     }
     for(int j=0;j<tables[i].columns.size();j++){
-        cout<<"| "<<tables[i].columns[j]<<" ";
+        cout<<"| "<<tables[i].columns[j].column_name<<" ";
     }
     cout<<"|"<<endl;
     for(int j=0;j<tables[i].data.size();j++){
@@ -128,31 +172,26 @@ void select(vector<string> prase,vector<table> &tables){
 }
 bool del(vector<string> prase,vector<table> &tables){
     int i=0;
-
     while(i<tables.size()){
         if(tables[i].table_name==prase[1]){
             break;
         }
         i++;
     }
-
     if(i<tables.size()){
         int c=0;
-
         for(int j=0;j<tables[i].columns.size();j++){
-            if(tables[i].columns[j]=="id"){
+            if(tables[i].columns[j].column_name=="id"){
                 c=j;
                 break;
             }
         }
-
         for(int j=0;j<tables[i].data.size();j++){
             if(tables[i].data[j].getid(c)==stoi(prase[2])){
                 tables[i].data.erase(tables[i].data.begin()+j);
                 return true;
             }
         }
-
         cout<<"void_db> row not found"<<endl;
         return false;
     }
@@ -161,20 +200,26 @@ bool del(vector<string> prase,vector<table> &tables){
 }
 bool update(vector<string> prase,vector<table> &tables){
     int i=0;
-
     while(i<tables.size()){
         if(tables[i].table_name==prase[1]){
             break;
         }
         i++;
     }
-
     if(i<tables.size()){
         int c=0;
         for(int j=0;j<tables[i].columns.size();j++){
-            if(tables[i].columns[j]=="id"){
+            if(tables[i].columns[j].column_name=="id"){
                 c=j;
                 break;
+            }
+        }
+        for(int j=0;j<tables[i].columns.size();j++){
+            int type=tables[i].columns[j].data_type;
+
+            if(!check_type(prase[j+2],type)){
+                cout<<"void_db> invalid data type for \""<<tables[i].columns[j].column_name<<"\""<<endl;
+                return false;
             }
         }
         for(int j=0;j<tables[i].data.size();j++){
@@ -194,101 +239,100 @@ bool update(vector<string> prase,vector<table> &tables){
 }
 bool validate(vector<string> prase,vector<table> tables){
     int c=-1;
-
     for(int i=0;i<commands.size();i++){
         if(prase[0]==commands[i]){
             c=i;
             break;
         }
     }
-
     if(c==-1){
         cout<<"void_db> Invalid command"<<endl;
         return false;
     }
-
     if(c==0){
         if(prase.size()<argu[c]){
             cout<<"void_db> argument mismatch"<<endl;
             return false;
         }
-
         for(int i=0;i<tables.size();i++){
             if(prase[1]==tables[i].table_name){
                 cout<<"void_db> table already exists"<<endl;
                 return false;
             }
         }
-
+        if(prase.size()%2!=0){
+            cout<<"void_db> invalid column definition"<<endl;
+            return false;
+        }
+        for(int i=3;i<prase.size();i+=2){
+            if(!data_type(prase[i])){
+                cout<<"void_db> invalid data type"<<endl;
+                return false;
+            }
+        }
         bool idfound=false;
-
+        int id_index=0;
         for(int i=2;i<prase.size();i++){
             if(prase[i]=="id"){
                 idfound=true;
+                id_index=i;
                 break;
             }
         }
-
         if(!idfound){
             cout<<"void_db> please include \"id\" column"<<endl;
             return false;
         }
-
-        for(int i=2;i<prase.size();i++){
-            for(int j=i+1;j<prase.size();j++){
+        if(prase[id_index+1]!="int"){
+            cout<<"void_db> invalid data type for \"id\""<<endl;
+            return false;
+        }
+        for(int i=2;i<prase.size();i+=2){
+            for(int j=i+2;j<prase.size();j+=2){
                 if(prase[i]==prase[j]){
                     cout<<"void_db> duplicate column"<<endl;
                     return false;
                 }
             }
         }
-
         return true;
     }
-
     if(c==1||c==2){
         if(prase.size()!=argu[c]){
             cout<<"void_db> argument mismatch"<<endl;
             return false;
         }
     }
-
     if(c==3){
         if(prase.size()<argu[c]){
             cout<<"void_db> argument mismatch"<<endl;
             return false;
         }
     }
-
     if(c==4){
         if(prase.size()<argu[c]){
             cout<<"void_db> argument mismatch"<<endl;
             return false;
         }
     }
-
     if(c==1||c==2||c==3||c==4){
         int i=0;
-
         while(i<tables.size()){
             if(tables[i].table_name==prase[1]){
                 break;
             }
             i++;
         }
-
         if(i>=tables.size()){
             cout<<"void_db> Table not found"<<endl;
             return false;
         }
-
         if(c==3){
             if(prase.size()-2!=tables[i].columns.size()){
                 cout<<"void_db> column count mismatch"<<endl;
                 return false;
             }
         }
-
         if(c==4){
             if(prase.size()-3!=tables[i].columns.size()-1){
                 cout<<"void_db> column count mismatch"<<endl;
@@ -296,7 +340,6 @@ bool validate(vector<string> prase,vector<table> tables){
             }
         }
     }
-
     return true;
 }
 int main(){
