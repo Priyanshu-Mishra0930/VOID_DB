@@ -18,6 +18,7 @@ The goal is to understand how database systems work internally by implementing t
 * Duplicate ID protection
 * Query parsing and validation
 * Multiple tables
+* Typed row storage
 * In-memory data management
 
 ---
@@ -76,6 +77,7 @@ Query Execution
 Table
  ├── Columns
  └── Rows
+      └── Values
 ```
 
 ### Core Classes
@@ -91,10 +93,13 @@ column
  └── data_type
 
 rows
- └── vector<string>
-```
+ └── vector<value>
 
-> Row values are currently stored as strings after datatype validation. Typed row storage will be implemented later.
+value
+ ├── type
+ ├── raw text data
+ └── converted data
+```
 
 ---
 
@@ -114,26 +119,33 @@ create users id int name text marks float
 
 Values are validated against their corresponding column types during `INSERT` and `UPDATE`.
 
+VoidDB converts validated values into their corresponding internal representation through the `value` class.
+
 ---
 
 ## 📊 Development Status
 
-| Component            | Status |
-| -------------------- | ------ |
-| Table Creation       | 🟢     |
-| Schema Validation    | 🟢     |
-| Data Type Validation | 🟢     |
-| Insert               | 🟢     |
-| Select               | 🟢     |
-| Update               | 🟢     |
-| Delete               | 🟢     |
-| Query Parsing        | 🟢     |
-| Multiple Tables      | 🟢     |
-| Persistent Storage   | ⚪      |
-| Indexing             | ⚪      |
-| Query Optimization   | ⚪      |
-| Transactions         | ⚪      |
-| Concurrency          | ⚪      |
+| Component                  | Status |
+| -------------------------- | ------ |
+| Table Creation             | 🟢     |
+| Schema Validation          | 🟢     |
+| Data Type Validation       | 🟢     |
+| Typed Value Storage        | 🟢     |
+| Insert                     | 🟢     |
+| Select                     | 🟢     |
+| Update                     | 🟢     |
+| Delete                     | 🟢     |
+| Duplicate ID Protection    | 🟢     |
+| Query Parsing              | 🟢     |
+| Query Validation           | 🟢     |
+| Multiple Tables            | 🟢     |
+| Persistent Storage         | ⚪      |
+| WHERE / Conditions         | ⚪      |
+| Indexing                   | ⚪      |
+| Query Optimization         | ⚪      |
+| Transactions               | ⚪      |
+| Concurrency                | ⚪      |
+| Client–Server Architecture | ⚪      |
 
 ---
 
@@ -153,7 +165,7 @@ Program Exit
 Data Lost
 ```
 
-Persistent storage is planned.
+Persistent storage is planned as the next major milestone.
 
 ---
 
@@ -169,6 +181,33 @@ Trees       → Indexing
 B-Tree/B+   → Database Indexes
 Queues      → Buffer Processing
 Stacks      → Query Processing
+Searching   → Query Execution
+Sorting     → Query Operations
+```
+
+The long-term goal is to replace simple linear operations with appropriate data structures as the database engine grows.
+
+---
+
+## 🔄 Development Roadmap
+
+```text
+Basic CRUD                    ✅
+Query Parsing                 ✅
+Query Validation              ✅
+SELECT Headers                ✅
+ID Uniqueness                 ✅
+Data Types                    ✅
+Typed Value Storage           ✅
+Persistent Storage             ⬜
+Better Parser                 ⬜
+WHERE / Conditions             ⬜
+Indexing                       ⬜
+Query Executor                 ⬜
+Query Optimization             ⬜
+Transactions                   ⬜
+Concurrency                    ⬜
+Client–Server Architecture     ⬜
 ```
 
 ---
@@ -201,30 +240,35 @@ It is being built from the ground up to understand the internals of database sys
 
 ```text
 Classes
-  ↓
+   ↓
 Tables
-  ↓
+   ↓
 Schemas
-  ↓
+   ↓
+Typed Values
+   ↓
 Rows
-  ↓
+   ↓
 Queries
-  ↓
+   ↓
 Database Engine
 ```
+
+Every feature is being implemented incrementally instead of relying on existing database libraries.
 
 ---
 
 ## 👨‍💻 Author
 
 **Prince**
+
 Computer Science & Engineering Student
 
 **Interests:** C++, Backend Development, DSA, Database Systems, Systems Programming
 
 ---
 
-### ⭐ VoidDB
+## ⭐ VoidDB
 
 > **From vectors and classes to a database engine.**
 
