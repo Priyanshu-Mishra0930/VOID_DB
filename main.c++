@@ -1,9 +1,37 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 vector<string> commands={"create","select","delete","insert","update"};
 vector<int> argu={3,2,3,3,3};
+class value{
+    private:
+        int type;
+        string data;
+        union converted_data
+        {
+            int int_data;
+            float float_data;
+        };
+        converted_data c;
+    public:
+        void convert_data_type(int type,string data,converted_data &c){
+            if(type==1){
+                c.int_data=stoi(data);
+            }else if(type==2){
+                this->data=data;
+            }else if (type==3)
+            {
+                c.float_data=stof(data);
+            }
+        }
+        value(int type,string data){
+            this->type=type;
+            this->data=data;
+            convert_data_type(type,data,this->c);
+        }
+};
 class rows{
     private:
         vector<string> data;
