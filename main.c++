@@ -31,37 +31,22 @@ class value{
             this->data=data;
             convert_data_type(type,data,this->c);
         }
-};
-class rows{
-    private:
-        vector<string> data;
-    public:
-        static int count;
-        rows(vector<string> data){
-            count++;
-            this->data=data;
+        int getter(){
+            return c.int_data;
+        }
+        int gettype(){
+            return type;
         }
         void display(){
-            for(int i=0;i<data.size();i++){
-                cout<<data[i]<<" ";
-            }
-            cout<<endl;
-        }
-        int getid(int c){
-            return stoi(data[c]);
-        }
-        void setdata(vector<string> newdata,int idindex){
-            int k=0;
-            for(int i=0;i<data.size();i++){
-                if(i==idindex){
-                    continue;
-                }
-                data[i]=newdata[k];
-                k++;
+            if(type==1){
+                cout<<c.int_data;
+            }else if(type==2){
+                cout<<data;
+            }else if(type==3){
+                cout<<c.float_data;
             }
         }
 };
-int rows::count=0;
 class column{
     public:
         string column_name;
@@ -71,6 +56,39 @@ class column{
             this->data_type=data_type;
         }
 };
+class rows{
+    private:
+        vector<value> data;
+    public:
+        static int count;
+        rows(vector<column> columns,vector<string> data){
+            for(int i=0;i<data.size();i++){
+                value v(columns[i].data_type,data[i]);
+                this->data.push_back(v);
+            }
+        }
+        void display(){
+            for(int i=0;i<data.size();i++){
+                data[i].display();
+                cout<<" ";
+            }
+            cout<<endl;
+        }
+        int getid(int c){
+            return data[c].getter();
+        }
+        void setdata(vector<string> newdata,int idindex){
+            int k=0;
+            for(int i=0;i<data.size();i++){
+                if(i==idindex){
+                    continue;
+                }
+                data[i]=value(data[i].gettype(),newdata[k]);
+                k++;
+            }
+        }
+};
+int rows::count=0;
 class table{
     public:
         string table_name;
@@ -178,7 +196,7 @@ bool insert(vector<string> prase,vector<table> &tables){
         return false;
     }
     prase.erase(prase.begin(),prase.begin()+2);
-    rows r1(prase);
+    rows r1(tables[i].columns,prase);
     tables[i].data.push_back(r1);
     return true;
 }
