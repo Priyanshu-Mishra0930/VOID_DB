@@ -1,275 +1,161 @@
-# VoidDB
+<div align="center">
 
-**VoidDB** is a lightweight database engine built from scratch in **C++**.
+# ⚡ VoidDB
 
-The goal is to understand how database systems work internally by implementing their core concepts step by step.
+### A Database Engine Built from Scratch in C++
 
----
+**From vectors and classes to a database engine.**
 
-## 🚀 Features
+[![Language](https://img.shields.io/badge/Language-C++17-blue?style=for-the-badge\&logo=cplusplus\&logoColor=white)](https://isocpp.org/)
+[![Storage](https://img.shields.io/badge/Persistent%20Storage-Complete-2ea44f?style=for-the-badge)](#-features)
+[![Status](https://img.shields.io/badge/Project-Active-8a2be2?style=for-the-badge)](#-roadmap)
 
-* Table creation
-* Custom schemas
-* Data types: `int`, `text`, `float`
-* Mandatory `id` column
-* Duplicate table/column validation
-* Data type validation
-* Insert, Select, Update, Delete
-* Duplicate ID protection
-* Query parsing and validation
-* Multiple tables
-* Typed row storage
-* In-memory data management
+</div>
 
 ---
 
-## 🧪 Commands
+## 🧠 About
 
-### Create
+**VoidDB** is a lightweight database engine developed from scratch in C++ to explore how databases work internally.
 
-```text
-create users id int name text age int
-```
+The project focuses on query processing, data structures, typed storage, and persistence without relying on external database libraries for its core functionality.
 
-### Insert
+## ✨ Features
 
-```text
-insert users 1 Prince 20
-```
-
-### Select
-
-```text
-select users
-```
-
-### Update
-
-```text
-update users 1 Prince 21
-```
-
-### Delete
-
-```text
-delete users 1
-```
-
-### Exit
-
-```text
-exit
-```
-
----
+| Feature         | Description                                   |
+| --------------- | --------------------------------------------- |
+| 🗂️ Tables      | Custom schemas and multiple tables            |
+| 🔢 Data Types   | `INT`, `TEXT`, `FLOAT`                        |
+| ⚙️ CRUD         | Insert, Select, Update, Delete                |
+| 🛡️ Validation  | Schema, data types, and duplicate IDs         |
+| 🧩 Query Engine | Query parsing and validation                  |
+| 💾 Persistence  | File-based storage and automatic saving       |
+| 🔄 Recovery     | Corruption detection and valid-table recovery |
 
 ## 🏗️ Architecture
 
 ```text
-User Input
-    ↓
-Parsing
-    ↓
-Validation
-    ↓
-Query Execution
-    ↓
-Table
- ├── Columns
- └── Rows
-      └── Values
+       USER INPUT
+            │
+            ▼
+      QUERY PARSER
+            │
+            ▼
+       VALIDATION
+            │
+            ▼
+      QUERY EXECUTOR
+            │
+            ▼
+        DATABASE
+            │
+      ┌─────┴─────┐
+      ▼           ▼
+    TABLES      STORAGE
+      │         voiddb.vdb
+   ┌──┴───┐
+   ▼      ▼
+COLUMNS  ROWS
+           │
+           ▼
+         VALUES
 ```
 
-### Core Classes
+**Core Classes:** `table` · `column` · `rows` · `value`
+
+## 💻 Example
 
 ```text
-table
- ├── table_name
- ├── vector<column>
- └── vector<rows>
-
-column
- ├── column_name
- └── data_type
-
-rows
- └── vector<value>
-
-value
- ├── type
- ├── raw text data
- └── converted data
+create users id int name text age int
+insert users 1 Prince 20
+select users
+update users 1 Prince 21
+delete users 1
 ```
 
----
-
-## 🧠 Data Types
+### Supported Data Types
 
 | Type    | Code |
-| ------- | ---: |
-| `int`   |    1 |
-| `text`  |    2 |
-| `float` |    3 |
+| :------ | :--: |
+| `INT`   |   1  |
+| `TEXT`  |   2  |
+| `FLOAT` |   3  |
 
-Example:
+## 💾 Persistent Storage
 
-```text
-create users id int name text marks float
-```
-
-Values are validated against their corresponding column types during `INSERT` and `UPDATE`.
-
-VoidDB converts validated values into their corresponding internal representation through the `value` class.
-
----
-
-## 📊 Development Status
-
-| Component                  | Status |
-| -------------------------- | ------ |
-| Table Creation             | 🟢     |
-| Schema Validation          | 🟢     |
-| Data Type Validation       | 🟢     |
-| Typed Value Storage        | 🟢     |
-| Insert                     | 🟢     |
-| Select                     | 🟢     |
-| Update                     | 🟢     |
-| Delete                     | 🟢     |
-| Duplicate ID Protection    | 🟢     |
-| Query Parsing              | 🟢     |
-| Query Validation           | 🟢     |
-| Multiple Tables            | 🟢     |
-| Persistent Storage         | ⚪      |
-| WHERE / Conditions         | ⚪      |
-| Indexing                   | ⚪      |
-| Query Optimization         | ⚪      |
-| Transactions               | ⚪      |
-| Concurrency                | ⚪      |
-| Client–Server Architecture | ⚪      |
-
----
-
-## 📦 Current Storage
-
-VoidDB currently uses **in-memory storage**.
+VoidDB stores data in `voiddb.vdb` and restores it when the program starts.
 
 ```text
-Program Start
-     ↓
-Tables + Rows in RAM
-     ↓
-Queries
-     ↓
-Program Exit
-     ↓
-Data Lost
+       DATABASE FILE
+             │
+             ▼
+      LOAD INTO MEMORY
+             │
+             ▼
+       EXECUTE QUERIES
+             │
+             ▼
+       SAVE CHANGES
 ```
 
-Persistent storage is planned as the next major milestone.
+**Current milestone:** Persistence, storage validation, and corruption recovery are complete. Performance optimization is intentionally deferred until further DSA progress.
 
----
+## 🗺️ Roadmap
 
-## 🧠 DSA Integration
+* [x] Core CRUD operations
+* [x] Query parsing and validation
+* [x] Typed value storage
+* [x] Multiple tables
+* [x] Persistent storage
+* [x] Corruption detection and recovery
+* [ ] `WHERE` conditions
+* [ ] Indexing and query optimization
+* [ ] Transactions
+* [ ] Concurrency
+* [ ] Client–server architecture
 
-VoidDB is also being used to apply DSA concepts to a real system.
+## 🧩 DSA in Practice
 
-Planned areas include:
+VoidDB is also a practical environment for applying DSA concepts.
 
-```text
-Hash Tables → Fast Lookup
-Trees       → Indexing
-B-Tree/B+   → Database Indexes
-Queues      → Buffer Processing
-Stacks      → Query Processing
-Searching   → Query Execution
-Sorting     → Query Operations
-```
+* **Hash Tables** — Faster lookups
+* **Trees & B-Trees** — Database indexing
+* **Searching & Sorting** — Query execution
+* **Stacks & Queues** — Processing concepts
 
-The long-term goal is to replace simple linear operations with appropriate data structures as the database engine grows.
+## 🔨 Build & Run
 
----
-
-## 🔄 Development Roadmap
-
-```text
-Basic CRUD                    ✅
-Query Parsing                 ✅
-Query Validation              ✅
-SELECT Headers                ✅
-ID Uniqueness                 ✅
-Data Types                    ✅
-Typed Value Storage           ✅
-Persistent Storage             ⬜
-Better Parser                 ⬜
-WHERE / Conditions             ⬜
-Indexing                       ⬜
-Query Executor                 ⬜
-Query Optimization             ⬜
-Transactions                   ⬜
-Concurrency                    ⬜
-Client–Server Architecture     ⬜
-```
-
----
-
-## 💻 Build
+**Compile:**
 
 ```bash
 g++ -std=c++17 main.c++ -o voiddb
 ```
 
-Run:
+**Windows:**
+
+```powershell
+.\voiddb.exe
+```
+
+**Linux:**
 
 ```bash
 ./voiddb
 ```
 
-Windows:
-
-```bash
-voiddb.exe
-```
-
----
-
-## 📌 Philosophy
-
-VoidDB is not just a CRUD project.
-
-It is being built from the ground up to understand the internals of database systems.
-
-```text
-Classes
-   ↓
-Tables
-   ↓
-Schemas
-   ↓
-Typed Values
-   ↓
-Rows
-   ↓
-Queries
-   ↓
-Database Engine
-```
-
-Every feature is being implemented incrementally instead of relying on existing database libraries.
-
----
-
 ## 👨‍💻 Author
 
 **Prince**
-
 Computer Science & Engineering Student
 
-**Interests:** C++, Backend Development, DSA, Database Systems, Systems Programming
+*C++ · Backend Development · DSA · Database Systems*
 
 ---
 
-## ⭐ VoidDB
+<div align="center">
 
-> **From vectors and classes to a database engine.**
+### ⚡ VoidDB
 
-Built from scratch in C++.
+*Built from scratch. Driven by curiosity.*
+
+</div>
